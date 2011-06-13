@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.authors     = ["John Duff"]
   s.email       = ["john.duff@shopify.com"]
   s.homepage    = ""
-  s.summary     = %q{Integrate with the SmartMta API.}
+  s.summary     = %q{Integrate with the SmartMTA API.}
   s.description = %q{Provides integration with the SmartMTA API.}
 
   s.rubyforge_project = "smart_mta"

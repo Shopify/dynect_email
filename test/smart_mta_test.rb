@@ -16,7 +16,7 @@ class SmartMtaTest < Test::Unit::TestCase
 
     SmartMta.api_key = ""
     error = assert_raise SmartMta::Error do
-      result = SmartMta.add_sender("john.duff@jadedpixel.com")
+      result = SmartMta.add_sender("test@example.com")
     end
 
     assert_equal "Missing or Invalid API Key", error.message
@@ -26,7 +26,7 @@ class SmartMtaTest < Test::Unit::TestCase
     FakeWeb.register_uri(:post, "http://smartmta.sendlabs.com/rest/json/accounts", :body => load_fixture('missing_or_invalid_fields'), :status => 451, :content_type => "text/json")
 
     error = assert_raise SmartMta::Error do
-      SmartMta.add_account("john.duff@jadedpixel.com", "test", nil, nil)
+      SmartMta.add_account("test@example.com", "test", nil, nil)
     end
 
     assert_equal "Missing or Invalid Required Fields", error.message
@@ -35,25 +35,50 @@ class SmartMtaTest < Test::Unit::TestCase
   def test_add_account
     FakeWeb.register_uri(:post, "http://smartmta.sendlabs.com/rest/json/accounts", :body => load_fixture('ok'), :status => 200, :content_type => "text/json")
 
-    account = SmartMta.add_account("john.duff@jadedpixel.com", "test", "Shopify", "1231231234")
+    response = SmartMta.add_account("test@example.com", "test", "Shopify", "1231231234")
 
-    assert_equal "john.duff@jadedpixel.com", account.username
-    assert_equal "1234", account.apikey
+    assert_equal "1234", response['apikey']
   end
 
   def test_add_sender
     FakeWeb.register_uri(:post, "http://smartmta.sendlabs.com/rest/json/senders", :body => load_fixture('ok'), :status => 200, :content_type => "text/json")
 
-    SmartMta.add_sender("john.duff@jadedpixel.com")
+    assert_nothing_raised do
+      SmartMta.add_sender("test@example.com")
+    end
   end
 
   def test_add_sender_duplicate
     FakeWeb.register_uri(:post, "http://smartmta.sendlabs.com/rest/json/senders", :body => load_fixture('object_already_exists'), :status => 453, :content_type => "text/json")
 
     error = assert_raise SmartMta::Error do
-      SmartMta.add_sender("john.duff@jadedpixel.com")
+      SmartMta.add_sender("test@example.com")
     end
 
     assert_equal "Object Already Exists", error.message
+  end
+
+  def test_add_sender_with_apikey
+    FakeWeb.register_uri(:post, "http://smartmta.sendlabs.com/rest/json/senders", :body => load_fixture('ok'), :status => 200, :content_type => "text/json")
+
+    assert_nothing_raised do
+      SmartMta.add_sender("test@example.com", "123")
+    end
+  end
+
+  def test_remove_sender
+    FakeWeb.register_uri(:post, "http://smartmta.sendlabs.com/rest/json/senders/delete", :body => load_fixture('ok'), :status => 200, :content_type => "text/json")
+
+    assert_nothing_raised do
+      SmartMta.remove_sender("test@example.com")
+    end
+  end
+
+  def test_remove_account
+    FakeWeb.register_uri(:post, "http://smartmta.sendlabs.com/rest/json/accounts/delete", :body => load_fixture('ok'), :status => 200, :content_type => "text/json")
+
+    assert_nothing_raised do
+      SmartMta.remove_account("test@example.com")
+    end
   end
 end
