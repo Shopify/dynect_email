@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'test/unit'
 require 'fakeweb'
-require 'lib/smart_mta'
+require 'lib/dynect_email'
 
 FakeWeb.allow_net_connect = false
 

@@ -1,3 +1,3 @@
-module SmartMta
+module DynECTEmail
   VERSION = "0.0.1"
 end
