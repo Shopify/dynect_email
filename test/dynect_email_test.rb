@@ -81,4 +81,12 @@ class DynECTEmailTest < Test::Unit::TestCase
       DynECTEmail.remove_account("test@example.com")
     end
   end
+
+  def test_set_headers
+    FakeWeb.register_uri(:post, "http://emailapi.dynect.net/rest/json/accounts/xheaders", :body => load_fixture('ok'), :status => 200, :content_type => "text/json")
+
+    assert_nothing_raised do
+      DynECTEmail.set_headers({:xheader1 => "X-Sample1", :xheader2 => "X-Sample2"})
+    end
+  end
 end

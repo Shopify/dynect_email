@@ -22,13 +22,20 @@ module DynECTEmail
   end
 
   def self.add_account(username, password, company, phone, options={})
-    result = post("/accounts", :body => {:apikey => DynECTEmail.api_key, :username => username, :password => password, :companyname => company, :phone => phone})
+    result = post("/accounts", :body => options.merge({:apikey => DynECTEmail.api_key, :username => username, :password => password, :companyname => company, :phone => phone}))
 
     handle_response(result)
   end
 
   def self.remove_account(username)
     result = post("/accounts/delete", :body => {:apikey => DynECTEmail.api_key, :username => username})
+
+    handle_response(result)
+  end
+
+  # {:xheader1 => "X-header", xheader2 => ....}
+  def self.set_headers(headers, apikey=nil)
+    result = post("/accounts/xheaders", :body => headers.merge({:apikey => apikey || DynECTEmail.api_key}))
 
     handle_response(result)
   end
