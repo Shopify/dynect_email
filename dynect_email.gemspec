@@ -4,7 +4,7 @@ require "dynect_email/version"
 
 Gem::Specification.new do |s|
   s.name        = "dynect_email"
-  s.version     = DynECTEmail::VERSION
+  s.version     = DynectEmail::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["John Duff"]
   s.email       = ["john.duff@shopify.com"]
