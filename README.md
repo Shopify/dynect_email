@@ -51,5 +51,6 @@ Check out the [API docs](https://dynectemail.tenderapp.com/help/kb/api/introduct
 3. Send a pull request.
 
 Notes:
+
 * Contributions without tests won't be accepted.
 * Please don't update the Gem version.
