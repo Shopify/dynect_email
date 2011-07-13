@@ -10,34 +10,24 @@ module DynectEmail
   end
 
   def self.add_sender(email, apikey=nil)
-    result = post("/senders", :body => { :apikey => apikey || DynectEmail.api_key, :emailaddress => email })
-
-    handle_response(result)
+    post_data("/senders", {:emailaddress => email}, apikey)
   end
 
   def self.remove_sender(email, apikey=nil)
-    result = post("/senders/delete", :body => { :apikey => apikey || DynectEmail.api_key, :emailaddress => email })
-
-    handle_response(result)
+    post_data("/senders/delete", {:emailaddress => email}, apikey)
   end
 
   def self.add_account(username, password, company, phone, options={})
-    result = post("/accounts", :body => options.merge({:apikey => DynectEmail.api_key, :username => username, :password => password, :companyname => company, :phone => phone}))
-
-    handle_response(result)
+    post_data("/accounts", options.merge({:username => username, :password => password, :companyname => company, :phone => phone}))
   end
 
   def self.remove_account(username)
-    result = post("/accounts/delete", :body => {:apikey => DynectEmail.api_key, :username => username})
-
-    handle_response(result)
+    post_data("/accounts/delete", :username => username)
   end
 
   # {:xheader1 => "X-header", xheader2 => ....}
   def self.set_headers(headers, apikey=nil)
-    result = post("/accounts/xheaders", :body => headers.merge({:apikey => apikey || DynectEmail.api_key}))
-
-    handle_response(result)
+    post_data("/accounts/xheaders", headers, apikey)
   end
 
   private
@@ -45,5 +35,12 @@ module DynectEmail
     message = response['response']['message']
     raise DynectEmail::Error, message unless message == 'OK'
     response['response']['data']
+  end
+
+  def self.post_data(url, options={}, apikey=nil)
+    options.merge!(:api_key => apikey || DynectEmail.api_key)
+    result = post(url, :body => options)
+
+    handle_response(result)
   end
 end
