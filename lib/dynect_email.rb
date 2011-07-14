@@ -38,7 +38,7 @@ module DynectEmail
   end
 
   def self.post_data(url, options={}, apikey=nil)
-    options.merge!(:api_key => apikey || DynectEmail.api_key)
+    options.merge!(:apikey => apikey || DynectEmail.api_key)
     result = post(url, :body => options)
 
     handle_response(result)

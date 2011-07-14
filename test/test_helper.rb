@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'test/unit'
 require 'fakeweb'
+require 'mocha'
 require 'lib/dynect_email'
 
 FakeWeb.allow_net_connect = false

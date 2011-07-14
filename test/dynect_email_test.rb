@@ -40,12 +40,26 @@ class DynectEmailTest < Test::Unit::TestCase
     assert_equal "1234", response['apikey']
   end
 
+  def test_add_account_sends_correct_parameters
+    DynectEmail.expects(:post).with("/accounts", :body => {:username => "test@example.com", :password => "test", :companyname => "Shopify", :phone => "1231231234", :apikey => "12345"})
+    DynectEmail.expects(:handle_response)
+
+    DynectEmail.add_account("test@example.com", "test", "Shopify", "1231231234")
+  end
+
   def test_add_sender
     FakeWeb.register_uri(:post, "http://emailapi.dynect.net/rest/json/senders", :body => load_fixture('ok'), :status => 200, :content_type => "text/json")
 
     assert_nothing_raised do
       DynectEmail.add_sender("test@example.com")
     end
+  end
+
+  def test_add_sender_sends_correct_parameters
+    DynectEmail.expects(:post).with("/senders", :body => {:emailaddress => "test@example.com", :apikey => "12345"})
+    DynectEmail.expects(:handle_response)
+
+    DynectEmail.add_sender("test@example.com")
   end
 
   def test_add_sender_duplicate
@@ -66,12 +80,26 @@ class DynectEmailTest < Test::Unit::TestCase
     end
   end
 
+  def test_add_sender_with_api_key_sends_correct_parameters
+    DynectEmail.expects(:post).with("/senders", :body => {:emailaddress => "test@example.com", :apikey => "123"})
+    DynectEmail.expects(:handle_response)
+
+    DynectEmail.add_sender("test@example.com", "123")
+  end
+
   def test_remove_sender
     FakeWeb.register_uri(:post, "http://emailapi.dynect.net/rest/json/senders/delete", :body => load_fixture('ok'), :status => 200, :content_type => "text/json")
 
     assert_nothing_raised do
       DynectEmail.remove_sender("test@example.com")
     end
+  end
+
+  def test_remove_sender_sends_correct_parameters
+    DynectEmail.expects(:post).with("/senders/delete", :body => {:emailaddress => "test@example.com", :apikey => "12345"})
+    DynectEmail.expects(:handle_response)
+
+    DynectEmail.remove_sender("test@example.com")
   end
 
   def test_remove_account
@@ -82,11 +110,25 @@ class DynectEmailTest < Test::Unit::TestCase
     end
   end
 
+  def test_remove_account_sends_correct_parameters
+    DynectEmail.expects(:post).with("/accounts/delete", :body => {:username => "test@example.com", :apikey => "12345"})
+    DynectEmail.expects(:handle_response)
+
+    DynectEmail.remove_account("test@example.com")
+  end
+
   def test_set_headers
     FakeWeb.register_uri(:post, "http://emailapi.dynect.net/rest/json/accounts/xheaders", :body => load_fixture('ok'), :status => 200, :content_type => "text/json")
 
     assert_nothing_raised do
       DynectEmail.set_headers({:xheader1 => "X-Sample1", :xheader2 => "X-Sample2"})
     end
+  end
+
+  def test_set_headers_sends_correct_parameters
+    DynectEmail.expects(:post).with("/accounts/xheaders", :body => {:xheader1 => "X-Sample1", :xheader2 => "X-Sample2", :apikey => "12345"})
+    DynectEmail.expects(:handle_response)
+
+    DynectEmail.set_headers({:xheader1 => "X-Sample1", :xheader2 => "X-Sample2"})
   end
 end
