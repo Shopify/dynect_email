@@ -131,4 +131,41 @@ class DynectEmailTest < Test::Unit::TestCase
 
     DynectEmail.set_headers({:xheader1 => "X-Sample1", :xheader2 => "X-Sample2"})
   end
+
+  def test_send
+    FakeWeb.register_uri(:post, "http://emailapi.dynect.net/rest/json/send", :body => load_fixture('ok'), :status => 200, :content_type => "text/json")
+
+    assert_nothing_raised do
+      DynectEmail.send({:from => "sender@example.com", :to => "test@example.com", :subject => "test subject", :bodytext => "hello"}, "12345")
+      DynectEmail.send({:from => "sender@example.com", :to => "test@example.com", :subject => "test subject", :bodyhtml => "<p>hello</p>"}, "12345")
+    end
+  end
+
+  def test_send_sends_correct_parameters_no_apikey
+    DynectEmail.expects(:post).with("/send", :body => {:apikey => "12345", :from => "test@example.com", :to => "recipient@example.com", :cc => "cc@example.com", :subject => "Test email", :bodytext => "hello", :bodyhtml => "<b>hello</b>", :replyto => "reply@example.com"})
+
+    DynectEmail.expects(:handle_response)
+
+    DynectEmail.send({:from => "test@example.com", :to => "recipient@example.com", :cc => "cc@example.com", :subject => "Test email", :bodytext => "hello", :bodyhtml => "<b>hello</b>", :replyto => "reply@example.com"})
+  end
+
+  def test_send_sends_correct_parameters_with_apikey
+    DynectEmail.expects(:post).with("/send", :body => {:apikey => "54321", :from => "test@example.com", :to => "recipient@example.com", :cc => "cc@example.com", :subject => "Test email", :bodytext => "hello", :bodyhtml => "<b>hello</b>", :replyto => "reply@example.com"})
+
+    DynectEmail.expects(:handle_response)
+
+    DynectEmail.send({:from => "test@example.com", :to => "recipient@example.com", :cc => "cc@example.com", :subject => "Test email", :bodytext => "hello", :bodyhtml => "<b>hello</b>", :replyto => "reply@example.com"}, "54321")
+  end
+
+  def test_bad_send
+    FakeWeb.register_uri(:post, "http://emailapi.dynect.net/rest/json/send", :body => load_fixture('bad_send'), :status => 200, :content_type => "text/json")
+
+    error = assert_raise DynectEmail::Error do
+      result = DynectEmail.send({:to => "test@example.com"}, "12345")
+    end
+
+    assert_equal "503 5.5.1 Error: need MAIL command", error.message
+  end
+
+
 end
