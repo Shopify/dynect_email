@@ -40,6 +40,11 @@ DynectEmail.remove_sender("myemail@example.com")
 
 # Remove account
 DynectEmail.remove_account("myemail@example.com")
+
+# Send an email
+# Note: to send to multiple addresses pass an array i.e., ["recipient1@example.com, "recipient2@example.com"]
+# Additionally, at lesat one of either bodytext or bodyhtml must be set.
+DynectEmail.send({:to => "recipient@example.com", :from => "sender@example.com", :subject => "Email Subject", :bodytext => "Hello", :bodyhtml => "<b>Hello</b>"}, "12345")
 ```
 
 Check out the [API docs](https://dynectemail.tenderapp.com/help/kb/api/introduction-to-dynect-email-deliverys-api) for more information on what parameters are available.
