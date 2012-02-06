@@ -38,8 +38,8 @@ module DynectEmail
   def self.handle_response(response)
     message = response['response']['message']
     data = response['response']['data']
-    raise DynectEmail::Error, message unless message == 'OK'
     raise DynectEmail::Error, data if data.is_a?(String) && (data.start_with?("4") || data.start_with?("5"))
+    raise DynectEmail::Error, message unless message == 'OK'
     response['response']['data']
   end
 
