@@ -38,7 +38,8 @@ module DynectEmail
   def self.handle_response(response)
     message = response['response']['message']
     data = response['response']['data']
-    raise DynectEmail::Error, data if data.is_a?(String) && (data.start_with?("4") || data.start_with?("5"))
+    # Dynect will still return a message of OK but a data status code of 4xx or 5xx
+    raise DynectEmail::Error, "#{message}: #{data}" if data.is_a?(String) && (data.start_with?("4") || data.start_with?("5"))
     raise DynectEmail::Error, message unless message == 'OK'
     response['response']['data']
   end

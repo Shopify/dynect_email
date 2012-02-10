@@ -164,7 +164,7 @@ class DynectEmailTest < Test::Unit::TestCase
       result = DynectEmail.send({:to => "test@example.com"}, "12345")
     end
 
-    assert_equal "503 5.5.1 Error: need MAIL command", error.message
+    assert_equal "OK: 503 5.5.1 Error: need MAIL command", error.message
   end
 
 
