@@ -25,6 +25,10 @@ module DynectEmail
     post_data("/accounts/delete", :username => username)
   end
 
+  def self.send(params, apikey=nil)
+    post_data("/send", params, apikey)
+  end
+
   # {:xheader1 => "X-header", xheader2 => ....}
   def self.set_headers(headers, apikey=nil)
     post_data("/accounts/xheaders", headers, apikey)
@@ -33,7 +37,10 @@ module DynectEmail
   private
   def self.handle_response(response)
     message = response['response']['message']
-    raise DynectEmail::Error, message unless message == 'OK'
+    data = response['response']['data']
+    # Dynect will still return a message of OK but a data status code of 4xx or 5xx
+    raise DynectEmail::Error, "#{message}: #{data}" if data.is_a?(String) && (data.start_with?("4") || data.start_with?("5"))
+    raise DynectEmail::Error, "#{message}: #{data}" unless message == 'OK'
     response['response']['data']
   end
 
