@@ -131,4 +131,79 @@ class DynectEmailTest < Test::Unit::TestCase
 
     DynectEmail.set_headers({:xheader1 => "X-Sample1", :xheader2 => "X-Sample2"})
   end
+
+  def test_get_bounces_count
+    FakeWeb.register_uri(:get, %r|http://emailapi.dynect.net/rest/json/reports/bounces/count\?|, :body => load_fixture('ok'), :status => 200, :content_type => "text/json")
+
+    assert_nothing_raised do
+      DynectEmail.get_bounces_count
+    end
+  end
+
+  def test_get_bounces_count_sends_correct_parameters
+    DynectEmail.expects(:get).with("/reports/bounces/count", :query => {:startdate => "2012-08-01", :enddate => "2012-08-17", :sender => "test@example.com", :apikey => "12345"})
+    DynectEmail.expects(:handle_response)
+
+    DynectEmail.get_bounces_count({:startdate => '2012-08-01', :enddate => '2012-08-17', :sender => 'test@example.com'})
+  end
+
+  def test_get_bounces
+    FakeWeb.register_uri(:get, %r|http://emailapi.dynect.net/rest/json/reports/bounces\?|, :body => load_fixture('ok'), :status => 200, :content_type => "text/json")
+
+    assert_nothing_raised do
+      DynectEmail.get_bounces
+    end
+  end
+
+  def test_get_bounces_sends_correct_parameters
+    DynectEmail.expects(:get).with("/reports/bounces", :query => {:startdate => "2012-08-01", :enddate => "2012-08-17", :sender => "test@example.com", :apikey => "12345"})
+    DynectEmail.expects(:handle_response)
+
+    DynectEmail.get_bounces({:startdate => '2012-08-01', :enddate => '2012-08-17', :sender => 'test@example.com'})
+  end
+
+  def test_get_suppressions_count
+    FakeWeb.register_uri(:get, %r|http://emailapi.dynect.net/rest/json/suppressions/count\?|, :body => load_fixture('ok'), :status => 200, :content_type => "text/json")
+
+    assert_nothing_raised do
+      DynectEmail.get_suppressions_count
+    end
+  end
+
+  def test_get_suppressions_count_sends_correct_parameters
+    DynectEmail.expects(:get).with("/suppressions/count", :query => {:startdate => "2012-08-01", :enddate => "2012-08-17", :apikey => "12345"})
+    DynectEmail.expects(:handle_response)
+
+    DynectEmail.get_suppressions_count({:startdate => '2012-08-01', :enddate => '2012-08-17'})
+  end
+
+  def test_get_suppressions
+    FakeWeb.register_uri(:get, %r|http://emailapi.dynect.net/rest/json/suppressions\?|, :body => load_fixture('ok'), :status => 200, :content_type => "text/json")
+
+    assert_nothing_raised do
+      DynectEmail.get_suppressions
+    end
+  end
+
+  def test_get_suppressions_sends_correct_parameters
+    DynectEmail.expects(:get).with("/suppressions", :query => {:startdate => "2012-08-01", :enddate => "2012-08-17", :apikey => "12345"})
+    DynectEmail.expects(:handle_response)
+
+    DynectEmail.get_suppressions({:startdate => '2012-08-01', :enddate => '2012-08-17'})
+  end
+
+  def test_activate_suppression
+    FakeWeb.register_uri(:post, "http://emailapi.dynect.net/rest/json/suppressions/activate", :body => load_fixture('ok'), :status => 200, :content_type => "text/json")
+
+    assert_nothing_raised do
+      DynectEmail.activate_suppression('test@example.com')
+    end
+  end
+
+  def test_activate_suppression_sends_correct_parameters
+    DynectEmail.expects(:post).with("/suppressions/activate", :body => {:emailaddress => 'test@example.com', :apikey => "12345"})
+    DynectEmail.expects(:handle_response)
+
+    DynectEmail.activate_suppression('test@example.com')
+  end
 end
